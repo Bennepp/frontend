@@ -26,18 +26,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const allMarkers = [];
 
   function addMarker(lat, lng, title, details) {
-    const marker = L.marker([lat, lng], { icon: osuIcon }).addTo(map);
-    const popupContent = `
-      <div class='infoBox'>
-        <button class='closeBtn' onclick="this.parentElement.parentElement.parentElement.remove()">×</button>
-        <h3>${title}</h3>
-        <p>${details}</p>
-      </div>
-    `;
-    marker.bindPopup(popupContent);
-    allMarkers.push({ marker, title, details, lat, lng });
-    return marker;
-  }
+  const marker = L.marker([lat, lng], { icon: osuIcon }).addTo(map);
+
+  // Create a custom div popup without Leaflet default styling
+  const popupContent = L.DomUtil.create('div', 'infoBox');
+  popupContent.innerHTML = `
+    <button class='closeBtn' onclick="this.parentElement.remove()">×</button>
+    <h3>${title}</h3>
+    <p>${details}</p>
+  `;
+
+  // Bind the popup using 'className' to avoid Leaflet wrapper styling
+  marker.bindPopup(popupContent, {
+    className: 'noLeafletPopup',
+    closeButton: false,
+    autoClose: false
+  });
+
+  allMarkers.push({ marker, title, details, lat, lng });
+  return marker;
+}
 
   async function geocodeAndAdd(location) {
     if (location.position) {
@@ -68,22 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
     form.style.display = form.style.display === "block" ? "none" : "block";
   });
 
-  const blacklist = ["testterm", "@everyone", "spam"]; // Frontend blacklist
-
   document.getElementById("sendBtn").addEventListener("click", async () => {
-    const name = document.getElementById("name").value.trim();
-    const location = document.getElementById("location").value.trim();
-    const description = document.getElementById("description").value.trim();
-
-    // Check blacklist before sending
-    const foundTerm = blacklist.find(term =>
-      [name, location, description].some(field => field.toLowerCase().includes(term))
-    );
-
-    if (foundTerm) {
-      alert(`Submission blocked! Contains blacklisted term: "${foundTerm}"`);
-      return; // stop here, never send to backend
-    }
+    const name = document.getElementById("name").value;
+    const location = document.getElementById("location").value;
+    const description = document.getElementById("description").value;
 
     try {
       const res = await fetch("https://discord-backend-production-71e5.up.railway.app/submit", {
@@ -92,9 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ name, location, description })
       });
 
-      const result = await res.json();
-      if (result.success) alert("Submission sent!");
-      else alert(`Failed to send: ${result.message || "Unknown error"}`);
+      if ((await res.json()).success) alert("Submission sent!");
+      else alert("Failed to send.");
     } catch (err) {
       console.error(err);
       alert("Error sending submission.");

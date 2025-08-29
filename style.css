@@ -11,32 +11,34 @@ body, html {
   width: 100%;
 }
 
-/* Marker popups */
+/* --- Marker popups (osu! style) --- */
 .infoBox {
   position: relative;
-  background: linear-gradient(135deg, #ffffff, #f9f9f9);
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-  font-size: 14px;
-  animation: slideIn 0.4s ease;
-  max-width: 260px;
+  background: linear-gradient(135deg, #ffdde6, #ff99cc);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+  font-size: 13px;
+  max-width: 320px; /* wider popup */
+  min-width: 200px;
   word-wrap: break-word;
   white-space: normal;
-  border: 1px solid #ddd;
+  border: 2px solid #ff66aa;
+  overflow: hidden;
+  animation: slideIn 0.3s ease;
 }
 
 .infoBox h3 {
   margin-top: 0;
   margin-bottom: 5px;
-  font-size: 16px;
-  color: #333;
+  font-size: 14px; /* smaller title */
+  color: #fff;
 }
 
 .infoBox p {
   margin: 0;
-  font-size: 13px;
-  color: #555;
+  font-size: 12px;
+  color: #f9f9f9;
 }
 
 .closeBtn {
@@ -47,12 +49,13 @@ body, html {
   border: none;
   font-size: 16px;
   font-weight: bold;
-  color: #888;
+  color: #fff;
   cursor: pointer;
+  transition: color 0.2s;
 }
 
 .closeBtn:hover {
-  color: #333;
+  color: #ff3388;
 }
 
 @keyframes slideIn {
@@ -60,7 +63,23 @@ body, html {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Floating submit button */
+/* --- Remove Leaflet popup default styling --- */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.noLeafletPopup {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* --- Floating submit button --- */
 #submitButton {
   position: absolute;
   top: 15px;
@@ -69,97 +88,118 @@ body, html {
   background-color: #ff66aa;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 10px 15px;
   cursor: pointer;
   font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
 #submitButton:hover {
   background-color: #ff3388;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
 }
 
-/* Submission form popup */
+/* --- Submission form popup (osu! style) --- */
 #submitForm {
   position: absolute;
   top: 60px;
   right: 15px;
   z-index: 1000;
-  background: linear-gradient(135deg, #ffffff, #ffe6f0);
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, #ffdde6, #ff99cc);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
   display: none;
-  width: 250px;
+  width: 300px;
+  border: 2px solid #ff66aa;
+  font-family: Arial, sans-serif;
+  animation: fadeInScale 0.3s ease;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 #submitForm input, #submitForm textarea {
   width: 100%;
-  margin-bottom: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #ff99cc;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #ff66aa;
   outline: none;
   font-size: 14px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+#submitForm input:focus, #submitForm textarea:focus {
+  border-color: #ff3388;
+  box-shadow: 0 0 8px rgba(255,102,170,0.4);
 }
 
 #submitForm button {
   width: 100%;
-  padding: 8px;
-  background-color: #ff66aa;
-  color: white;
+  padding: 10px;
+  background: linear-gradient(135deg, #ff66aa, #ff3388);
+  color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
 #submitForm button:hover {
-  background-color: #ff3388;
+  background: linear-gradient(135deg, #ff3388, #ff66aa);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
 }
 
-/* Search bar container */
+/* --- Search bar container --- */
 #searchContainer {
   position: absolute;
   top: 15px;
-  right: 180px; /* leave space for submit button */
+  right: 180px;
   z-index: 1000;
   min-width: 250px;
-  font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
 }
 
-/* Search input */
+/* --- Search input --- */
 #searchInput {
   width: 100%;
   padding: 10px 12px;
   font-size: 14px;
   border-radius: 12px;
-  border: 1px solid #ff99cc;
+  border: 1px solid #ff66aa;
   outline: none;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1) inset;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
   box-sizing: border-box;
 }
 
-/* Search results dropdown */
+/* --- Search results dropdown --- */
 #searchResults {
   margin-top: 5px;
   max-height: 200px;
   overflow-y: auto;
   background-color: #fff;
   border-radius: 12px;
-  border: 1px solid #ff99cc;
+  border: 1px solid #ff66aa;
   box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  padding: 0; /* align with input */
-  width: 95%; /* slightly narrower than input */
+  padding: 0;
+  width: 95%;
   box-sizing: border-box;
-  align-self: flex-start; /* left-align within container */
+  align-self: flex-start;
 }
 
-/* Custom scrollbar for results */
 #searchResults::-webkit-scrollbar {
   width: 6px;
   border-radius: 6px;
@@ -175,7 +215,7 @@ body, html {
   border-radius: 6px;
 }
 
-/* Individual result item */
+/* --- Individual result item --- */
 .resultItem {
   padding: 10px 12px;
   cursor: pointer;
