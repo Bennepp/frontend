@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Maniadox Map</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+</head>
+<body>
+  <div id="map" style="height: 100%;"></div>
+
+  <!-- Submit Button -->
+  <button id="submitButton">Submit</button>
+
+  <!-- Submission Form -->
+  <div id="submitForm" style="display: none;">
+    <input type="text" id="name" placeholder="Name" />
+    <input type="text" id="location" placeholder="Address or Coordinates" />
+    <textarea id="description" placeholder="Description"></textarea>
+    <button id="sendBtn">Send to Discord</button>
+  </div>
+
+  <!-- Search Bar -->
+  <div id="searchContainer">
+    <input type="text" id="searchInput" placeholder="Search by name, location, or description" />
+    <div id="searchResults"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
