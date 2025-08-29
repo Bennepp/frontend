@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { address: "4 marsden avenue st helens", title: "Joshstar", details: "wow i made this" },
     { address: "140 abery drive maidstone kent", title: "TingMomentum", details: '"WHY DO YOU SPREAD CP TING? I DONT DO THAT ANYMORE"'},
     { address: "Edmonton canada", title: "Exislu", details: "schizo king"},
-    { address: "8297 oliver twist lane nevada", title: "Gryphon1", details: "Looks like we have some cleaning up to do..... can also type at 75wpm thanks to linus tech tips"}
+    { address: "8297 oliver twist lane nevada", title: "Gryphon1", details: "Looks like we have some cleaning up to do..... can also type at 75wpm thanks to linus tech tips"},
   ];
 
   const allMarkers = [];
