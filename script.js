@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { address: "pirupi, title: ", title:"409 snowbird rd chesterfield va", details: "BABY BABY I WANNA MAKE YOU KAMMMMMMMMMMM -bryan yahir hermandez cruz" },
     { address: "4 marsden avenue st helens", title: "Joshstar", details: "wow i made this" },
     { address: "140 abery drive maidstone kent", title: "TingMomentum", details: '"WHY DO YOU SPREAD CP TING? I DONT DO THAT ANYMORE"'},
-    { address: "Edmonton canada", title: "Exislu", details: "schizo king"},
+    { address: "Edmonton canada", title: "Exislu", details: "schizo king"}
   ];
 
   const allMarkers = [];
