@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const description = document.getElementById("description").value;
 
     try {
-      const res = await fetch("https://your-backend.onrender.com/submit", {
+      const res = await fetch("https://discord-backend-production-71e5.up.railway.app/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, location, description })
