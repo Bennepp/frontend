@@ -14,39 +14,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const locations = [
     { address: "New York City", title: "New York City", details: "Example details" },
-    { position: [40.73061, -73.935242], title: "Brooklyn", details: "Example details" },
-    { address: "1401 N malone street", title: "Dazl", details: "zoophile" },
-    { address: "20465 w walnut dr sonora ca", title: "intelzoz", details: "ilcp those who know" },
-    { address: "pirupi, title: ", title:"409 snowbird rd chesterfield va", details: "BABY BABY I WANNA MAKE YOU KAMMMMMMMMMMM -bryan yahir hermandez cruz" },
-    { address: "4 marsden avenue st helens", title: "Joshstar", details: "wow i made this" },
-    { address: "140 abery drive maidstone kent", title: "TingMomentum", details: '"WHY DO YOU SPREAD CP TING? I DONT DO THAT ANYMORE"'},
-    { address: "Edmonton canada", title: "Exislu", details: "schizo king"},
-    { address: "8297 oliver twist lane nevada", title: "Gryphon1", details: "Looks like we have some cleaning up to do..... can also type at 75wpm thanks to linus tech tips"},
+    { position: [40.73061, -73.935242], title: "Brooklyn", details: "Example details" }
   ];
 
   const allMarkers = [];
 
   function addMarker(lat, lng, title, details) {
-  const marker = L.marker([lat, lng], { icon: osuIcon }).addTo(map);
-
-  // Create a custom div popup without Leaflet default styling
-  const popupContent = L.DomUtil.create('div', 'infoBox');
-  popupContent.innerHTML = `
-    <button class='closeBtn' onclick="this.parentElement.remove()">×</button>
-    <h3>${title}</h3>
-    <p>${details}</p>
-  `;
-
-  // Bind the popup using 'className' to avoid Leaflet wrapper styling
-  marker.bindPopup(popupContent, {
-    className: 'noLeafletPopup',
-    closeButton: false,
-    autoClose: false
-  });
-
-  allMarkers.push({ marker, title, details, lat, lng });
-  return marker;
-}
+    const marker = L.marker([lat, lng], { icon: osuIcon }).addTo(map);
+    const popupContent = `
+      <div class='infoBox'>
+        <button class='closeBtn' onclick="this.parentElement.parentElement.parentElement.remove()">×</button>
+        <h3>${title}</h3>
+        <p>${details}</p>
+      </div>
+    `;
+    marker.bindPopup(popupContent);
+    allMarkers.push({ marker, title, details, lat, lng });
+    return marker;
+  }
 
   async function geocodeAndAdd(location) {
     if (location.position) {
@@ -83,10 +68,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const description = document.getElementById("description").value;
 
     try {
+      let finalLocation = location; // fallback in case geocoding fails
+
+      // Convert address to coordinates first
+      const geoResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
+      );
+      const geoData = await geoResponse.json();
+      if (geoData && geoData.length > 0) {
+        const { lat, lon } = geoData[0];
+        finalLocation = `${lat}, ${lon} (${location})`; // coords then address
+      }
+
       const res = await fetch("https://discord-backend-production-71e5.up.railway.app/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, location, description })
+        body: JSON.stringify({ name, location: finalLocation, description })
       });
 
       if ((await res.json()).success) alert("Submission sent!");
