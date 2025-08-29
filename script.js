@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function geocodeLocations(locations) {
     for (const loc of locations) {
       await geocodeAndAdd(loc);
-      await new Promise(r => setTimeout(r, 250)); // 250ms delay
+      await new Promise(r => setTimeout(r, 500)); // 250ms delay
     }
   }
 
