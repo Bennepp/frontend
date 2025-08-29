@@ -62,10 +62,22 @@ document.addEventListener("DOMContentLoaded", () => {
     form.style.display = form.style.display === "block" ? "none" : "block";
   });
 
+  const blacklist = ["testterm", "@everyone", "spam"]; // Frontend blacklist
+
   document.getElementById("sendBtn").addEventListener("click", async () => {
-    const name = document.getElementById("name").value;
-    const location = document.getElementById("location").value;
-    const description = document.getElementById("description").value;
+    const name = document.getElementById("name").value.trim();
+    const location = document.getElementById("location").value.trim();
+    const description = document.getElementById("description").value.trim();
+
+    // Check blacklist before sending
+    const foundTerm = blacklist.find(term =>
+      [name, location, description].some(field => field.toLowerCase().includes(term))
+    );
+
+    if (foundTerm) {
+      alert(`Submission blocked! Contains blacklisted term: "${foundTerm}"`);
+      return; // stop here, never send to backend
+    }
 
     try {
       const res = await fetch("https://discord-backend-production-71e5.up.railway.app/submit", {
@@ -74,8 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ name, location, description })
       });
 
-      if ((await res.json()).success) alert("Submission sent!");
-      else alert("Failed to send.");
+      const result = await res.json();
+      if (result.success) alert("Submission sent!");
+      else alert(`Failed to send: ${result.message || "Unknown error"}`);
     } catch (err) {
       console.error(err);
       alert("Error sending submission.");
