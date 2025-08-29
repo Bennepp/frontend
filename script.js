@@ -17,11 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
     { position: [40.73061, -73.935242], title: "Brooklyn", details: "Example details" },
     { position: [34.8163486, -86.9763175], title: "Dazl", details: "zoophile" },
     { address: "20465 w walnut dr sonora ca", title: "intelzoz", details: "ilcp those who know" },
-    { address: "pirupi, title: ", title:"409 snowbird rd chesterfield va", details: "BABY BABY I WANNA MAKE YOU KAMMMMMMMMMMM -bryan yahir hermandez cruz" },
+    { address: "pirupi", title:"409 snowbird rd chesterfield va", details: "BABY BABY I WANNA MAKE YOU KAMMMMMMMMMMM -bryan yahir hermandez cruz" },
     { address: "4 marsden avenue st helens", title: "Joshstar", details: "wow i made this" },
     { address: "140 abery drive maidstone kent", title: "TingMomentum", details: '"WHY DO YOU SPREAD CP TING? I DONT DO THAT ANYMORE"'},
     { address: "Edmonton canada", title: "Exislu", details: "schizo king"},
-    { address: "8297 oliver twist lane nevada", title: "Gryphon1", details: "Looks like we have some cleaning up to do..... can also type at 75wpm thanks to linus tech tips" }
+    { address: "8297 oliver twist lane nevada", title: "Gryphon1", details: "Looks like we have some cleaning up to do..... can also type at 75wpm thanks to linus tech tips"}
   ];
 
   const allMarkers = [];
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const marker = L.marker([lat, lng], { icon: osuIcon }).addTo(map);
     const popupContent = `
       <div class='infoBox'>
-        <button class='closeBtn' onclick="this.parentElement.parentElement.parentElement.remove()">×</button>
+        <button class='closeBtn' onclick="this.parentElement.parentElement.remove()">×</button>
         <h3>${title}</h3>
         <p>${details}</p>
       </div>
@@ -52,6 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data && data.length > 0) {
           const { lat, lon } = data[0];
           addMarker(parseFloat(lat), parseFloat(lon), location.title, location.details);
+          // store coords for Discord submission
+          location.coords = [parseFloat(lat), parseFloat(lon)];
+        } else {
+          console.warn(`No results for address: ${location.address}`);
         }
       } catch (err) {
         console.error("Geocoding failed:", err);
@@ -59,7 +63,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  locations.forEach(loc => geocodeAndAdd(loc));
+  // Sequential geocoding to avoid rate-limit
+  async function geocodeLocations(locations) {
+    for (const loc of locations) {
+      await geocodeAndAdd(loc);
+      await new Promise(r => setTimeout(r, 250)); // 250ms delay
+    }
+  }
+
+  geocodeLocations(locations);
 
   // --- Submission Form ---
   const submitBtn = document.getElementById("submitButton");
@@ -71,26 +83,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("sendBtn").addEventListener("click", async () => {
     const name = document.getElementById("name").value;
-    const location = document.getElementById("location").value;
+    const addressInput = document.getElementById("location").value;
     const description = document.getElementById("description").value;
 
+    let locationField = addressInput;
+
+    // Attempt to get coordinates for the entered address
     try {
-      let finalLocation = location; // fallback in case geocoding fails
-
-      // Convert address to coordinates first
-      const geoResponse = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressInput)}`
       );
-      const geoData = await geoResponse.json();
-      if (geoData && geoData.length > 0) {
-        const { lat, lon } = geoData[0];
-        finalLocation = `${lat}, ${lon} (${location})`; // coords then address
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        locationField = `${lat},${lon} (${addressInput})`;
       }
+    } catch (err) {
+      console.error("Failed to get coordinates for submission:", err);
+      locationField = addressInput; // fallback
+    }
 
+    try {
       const res = await fetch("https://discord-backend-production-71e5.up.railway.app/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, location: finalLocation, description })
+        body: JSON.stringify({ name, location: locationField, description })
       });
 
       if ((await res.json()).success) alert("Submission sent!");
